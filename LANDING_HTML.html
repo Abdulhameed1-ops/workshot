@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshot - AI-Powered Learning Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid #2a2a2a;
+        }
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+            font-size: 15px;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: #fff;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 48px 48px;
+            background: radial-gradient(ellipse at top, rgba(102, 126, 234, 0.15), transparent 50%);
+        }
+        
+        .hero-content {
+            max-width: 1200px;
+            text-align: center;
+        }
+        
+        .hero-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            padding-top: 60px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .hero-title {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: 24px;
+            color: #999;
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .workshot-logo {
+            width: 120px;
+            height: 120px;
+            position: relative;
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-1px) rotate(2deg); }
+        }
+        
+        .logo-briefcase {
+            width: 100%;
+            height: 70%;
+            background: linear-gradient(135deg, #6366f1 1%, #6366f1 100%);
+            border-radius: 15px 15px 5px 5px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .logo-handle {
+            width: 45%;
+            height: 25px;
+            background: linear-gradient(135deg, #6366f1 100%, #6366f1 100%);
+            border-radius: 15px 15px 0 0;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .logo-camera {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 12px;
+            position: absolute;
+            bottom: 15px;
+            right: -1px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo-lens {
+            width: 28px;
+            height: 28px;
+            border: 4px solid #8b5cf6;
+            border-radius: 50%;
+            animation: lensPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes lensPulse {
+            0%, 100% { transform: scale(1); border-color: #8b5cf6; }
+            50% { transform: scale(1.2); border-color: #6366f1; }
+        }
+        
+        .logo-clasp {
+            width: 30px;
+            height: 15px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 5px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+
+        .btn-large {
+            padding: 16px 32px;
+            font-size: 18px;
+        }
+        
+        .btn-guest {
+            background: #2a2a2a;
+            color: #fff;
+        }
+        
+        .btn-guest:hover {
+            background: #3a3a3a;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 48px;
+            background: #0a0a0a;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 18px;
+            color: #999;
+            margin-bottom: 64px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: #1a1a1a;
+            padding: 32px;
+            border-radius: 20px;
+            border: 1px solid #2a2a2a;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: #667eea;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .feature-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .feature-description {
+            color: #999;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        /* Why Choose Section */
+        .why-choose {
+            padding: 80px 48px;
+            background: radial-gradient(ellipse at center, rgba(102, 126, 234, 0.1), transparent 70%);
+        }
+        
+        .reasons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .reason-card {
+            background: rgba(26, 26, 26, 0.5);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid #2a2a2a;
+        }
+        
+        .reason-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        
+        .reason-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .reason-text {
+            color: #999;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .cta {
+            padding: 80px 48px;
+            text-align: center;
+            background: #0a0a0a;
+        }
+        
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 64px 48px;
+            border-radius: 24px;
+            border: 2px solid #667eea;
+        }
+        
+        .cta-title {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .cta-subtitle {
+            font-size: 18px;
+            color: #999;
+            margin-bottom: 32px;
+        }
+        
+        /* Guest Limitations */
+        .guest-info {
+            background: rgba(255, 107, 53, 0.1);
+            border: 2px solid #ff6b35;
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 600px;
+            margin: 32px auto;
+        }
+        
+        .guest-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ff6b35;
+            margin-bottom: 16px;
+        }
+        
+        .guest-list {
+            text-align: left;
+            color: #ccc;
+            font-size: 15px;
+            line-height: 2;
+        }
+        
+        .guest-list li {
+            margin-bottom: 8px;
+        }
+        .paid-info {
+            background: rgba(77, 255, 53, 0.1);
+            border: 2px solid rgb(1, 162, 1);
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 600px;
+            margin: 32px auto;
+        }
+        
+        .paid-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: rgb(1, 162, 1);
+            margin-bottom: 16px;
+        }
+        
+        .paid-list {
+            text-align: left;
+            color: #ccc;
+            font-size: 15px;
+            line-height: 2;
+        }
+        
+        .guest-list li {
+            margin-bottom: 8px;
+        }
+        .check { color: #4caf50; }
+        .cross { color: #ff6b35; }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 16px 24px;
+            }
+            
+            .hero {
+                padding: 80px 24px 48px;
+            }
+            
+            .hero-title {
+                font-size: 40px;
+            }
+            
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            
+            .features, .why-choose, .cta {
+                padding: 60px 24px;
+            }
+            
+            .section-title {
+                font-size: 36px;
+            }
+            .logo {
+                font-size: 15px;
+            }
+        
+        img{
+            width: 80px;
+        }
+        .btn{
+            font-size: 12px;
+        }
+        }
+        img{
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="logo"></div>
+        <div class="nav-buttons">
+            <a href="/login" class="btn btn-secondary">Sign In</a>
+            <a href="/signup" class="btn btn-primary">Get Started</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-icon">
+                 <div class="workshot-logo">
+                <div class="logo-briefcase">
+                    <div class="logo-handle"></div>
+                    <div class="logo-clasp"></div>
+                </div>
+                <div class="logo-camera">
+                    <div class="logo-lens"></div>
+                </div>
+            </div>
+            </div>
+            <h1 class="hero-title">Transform Your Learning with AI</h1>
+            <p class="hero-subtitle">
+                Upload any document, image, or spreadsheet and let our AI help you understand it better.<br>
+                Get instant explanations, summaries, and even voice lectures! For Free
+            </p>
+            <div class="hero-buttons">
+                <a href="/signup" class="btn btn-primary btn-large">Create Free Account</a>
+                <a href="/guest" class="btn btn-guest btn-large">Try Without Signing Up</a>
+            </div>
+            
+            <div class="guest-info">
+                <div class="guest-title">⚡ Guest Mode Features</div>
+                <ul class="guest-list">
+                    <li><span class="check">✓</span> 5 Free AI Conversations</li>
+                    <li><span class="check">✓</span> Upload Images, PDFs, Documents</li>
+                    <li><span class="check">✓</span> Instant AI Explanations</li>
+                    <li><span class="cross">✗</span> No Voice Lectures</li>
+                    <li><span class="cross">✗</span> No Chat History</li>
+                    <li><span class="cross">✗</span> Limited File Uploads</li>
+                </ul>
+            </div>
+            <div class="paid-info">
+                <div class="paid-title">⚡ Members plan Features</div>
+                <ul class="paid-list">
+                    <li><span class="check">✓</span> Limitless AI Conversations</li>
+                    <li><span class="check">✓</span> Smarter AI response</li>
+                    <li><span class="check">✓</span> Upload Images, PDFs, Documents</li>
+                    <li><span class="check">✓</span> Instant AI Explanations</li>
+                    <li><span class="check">✓</span> Voice Lectures</li>
+                    <li><span class="check">✓</span> Chat History</li>
+                    <li><span class="check">✓</span> Limitless file uploades</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2 class="section-title">Powerful Features</h2>
+        <p class="section-subtitle">Everything you need to enhance your learning experience</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📄</div>
+                <h3 class="feature-title">Multi-Format Support</h3>
+                <p class="feature-description">
+                    Upload PDFs, Word documents, Excel spreadsheets, and images. Our AI extracts and understands content from any format.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3 class="feature-title">AI-Powered Analysis</h3>
+                <p class="feature-description">
+                    Advanced AI technology analyzes your documents and provides clear, detailed explanations tailored to your questions.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎤</div>
+                <h3 class="feature-title">Voice Lectures</h3>
+                <p class="feature-description">
+                    Convert any AI response into a voice lecture with multiple language options. Learn by listening!
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3 class="feature-title">Data Extraction</h3>
+                <p class="feature-description">
+                    Automatically extract data from tables, charts, and spreadsheets. Get insights from complex data instantly.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3 class="feature-title">Interactive Chat</h3>
+                <p class="feature-description">
+                    Have a conversation with AI about your documents. Ask follow-up questions and dive deeper into topics.
+                </p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3 class="feature-title">Secure & Private</h3>
+                <p class="feature-description">
+                    Your documents and conversations are completely private. We never share your data with third parties.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Section -->
+    <section class="why-choose">
+        <h2 class="section-title">Why Choose Workshot?</h2>
+        <p class="section-subtitle">The smart choice for students, professionals, and lifelong learners</p>
+        
+        <div class="reasons-grid">
+            <div class="reason-card">
+                <div class="reason-icon">⚡</div>
+                <h3 class="reason-title">Lightning Fast</h3>
+                <p class="reason-text">Get instant responses to your questions. No waiting, no delays.</p>
+            </div>
+            
+            <div class="reason-card">
+                <div class="reason-icon">🎯</div>
+                <h3 class="reason-title">Accurate Results</h3>
+                <p class="reason-text">Powered by advanced AI models for reliable and precise answers.</p>
+            </div>
+            
+            <div class="reason-card">
+                <div class="reason-icon">💰</div>
+                <h3 class="reason-title">Free to Start</h3>
+                <p class="reason-text">Create a free account and start learning today. No credit card required.</p>
+            </div>
+            
+            <div class="reason-card">
+                <div class="reason-icon">🌍</div>
+                <h3 class="reason-title">Multi-Language</h3>
+                <p class="reason-text">Voice lectures available in multiple languages and accents.</p>
+            </div>
+            
+            <div class="reason-card">
+                <div class="reason-icon">📱</div>
+                <h3 class="reason-title">Works Everywhere</h3>
+                <p class="reason-text">Access from any device - desktop, tablet, or mobile.</p>
+            </div>
+            
+            <div class="reason-card">
+                <div class="reason-icon">📚</div>
+                <h3 class="reason-title">Chat History</h3>
+                <p class="reason-text">Keep track of all your conversations and revisit them anytime.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Transform Your Learning?</h2>
+            <p class="cta-subtitle">Join thousands of students and professionals using Workshot every day</p>
+            <div class="hero-buttons">
+                <a href="/signup" class="btn btn-primary btn-large">Create Free Account</a>
+                <a href="/guest" class="btn btn-guest btn-large">Try as Guest</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workshot Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+        
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .user-name {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .logout-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        
+        .welcome-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .upload-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin-bottom: 32px;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 16px;
+            padding: 60px 40px;
+            text-align: center;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f1ff 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 24px;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #f0f1ff 0%, #e8eaff 100%);
+            transform: translateY(-2px);
+        }
+        
+        .upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8eaff;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .upload-text {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        
+        .upload-subtext {
+            font-size: 15px;
+            color: #999;
+            line-height: 1.6;
+        }
+        
+        .file-types {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .selected-files {
+            margin-bottom: 24px;
+            display: none;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f1ff 100%);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 2px solid #e8eaff;
+        }
+        
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+        }
+        
+        .file-icon {
+            font-size: 24px;
+        }
+        
+        .file-name {
+            font-size: 15px;
+            color: #333;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .file-size {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .remove-file {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .remove-file:hover {
+            background: #cc0000;
+            transform: scale(1.05);
+        }
+        
+        .prompt-section {
+            margin-bottom: 24px;
+        }
+        
+        .prompt-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .prompt-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .prompt-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .process-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .process-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .process-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .lecture-btn {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        .results-section {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            display: none;
+            margin-bottom: 32px;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f1ff 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .result-content {
+            font-size: 15px;
+            color: #555;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .lecture-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 32px;
+            border-radius: 16px;
+            color: white;
+            display: none;
+            margin-top: 24px;
+        }
+        
+        .voice-selector {
+            margin-bottom: 20px;
+        }
+        
+        .voice-label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .voice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .voice-option {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .voice-option:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .voice-option.active {
+            background: rgba(255,255,255,0.4);
+            border-color: white;
+        }
+        
+        .voice-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .voice-btn {
+            flex: 1;
+            padding: 14px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .voice-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        
+        .voice-btn.speaking {
+            background: white;
+            color: #667eea;
+        }
+        
+        .error-message, .success-message {
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .error-message {
+            background: #fee;
+            color: #c33;
+            border-left: 5px solid #c33;
+        }
+        
+        .success-message {
+            background: #efe;
+            color: #3c3;
+            border-left: 5px solid #3c3;
+        }
+        
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .voice-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <img src="/static/workshot_logo.png" alt="Workshot" class="logo-img" onerror="this.style.display='none'">
+            <span>📚 Workshot</span>
+        </div>
+        <div class="navbar-user">
+            <span class="user-name">👋 Hello, User!</span>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="welcome-section">
+            <h1 class="welcome-title">Welcome to Workshot! 🚀</h1>
+            <p class="welcome-subtitle">Upload your documents, images, PDFs, or Excel files and let AI help you understand them better with text explanations or voice lectures!</p>
+        </div>
+
+        <div class="upload-section">
+            <h2 class="section-title">📤 Upload Your Files</h2>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-icon">📎</div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-subtext">Upload images, documents, or spreadsheets</div>
+                <div class="file-types">📄 PDF • 📝 DOCX • 📊 XLSX • 🖼️ Images (JPG, PNG)</div>
+            </div>
+            
+            <input type="file" id="fileInput" multiple accept="image/*,.pdf,.doc,.docx,.xlsx,.xls">
+            
+            <div class="selected-files" id="selectedFiles"></div>
+            
+            <div class="prompt-section">
+                <label class="prompt-label">💬 What would you like to know?</label>
+                <textarea class="prompt-input" id="promptInput" placeholder="E.g., 'Explain this problem', 'Solve this equation', 'Summarize these notes', or leave blank for automatic analysis"></textarea>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="process-btn" id="processBtn" onclick="processFiles()" disabled>
+                    <span>🔍 Analyze Files</span>
+                </button>
+                <button class="process-btn lecture-btn" id="lectureBtn" onclick="showLectureOptions()" disabled>
+                    <span>🎤 Generate Lecture</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <h2 class="section-title">📊 Analysis Results</h2>
+            
+            <div class="result-box">
+                <div class="result-title">📝 Extracted Content</div>
+                <div class="result-content" id="extractedText"></div>
+            </div>
+            
+            <div class="result-box">
+                <div class="result-title">🤖 AI Explanation</div>
+                <div class="result-content" id="aiResponse"></div>
+            </div>
+            
+            <div class="lecture-section" id="lectureSection">
+                <div class="voice-selector">
+                    <label class="voice-label">🎭 Choose Voice</label>
+                    <div class="voice-grid">
+                        <div class="voice-option active" data-voice="en-US" onclick="selectVoice(this, 'en-US')">
+                            🇺🇸 US English
+                        </div>
+                        <div class="voice-option" data-voice="en-GB" onclick="selectVoice(this, 'en-GB')">
+                            🇬🇧 British
+                        </div>
+                        <div class="voice-option" data-voice="en-AU" onclick="selectVoice(this, 'en-AU')">
+                            🇦🇺 Australian
+                        </div>
+                        <div class="voice-option" data-voice="en-IN" onclick="selectVoice(this, 'en-IN')">
+                            🇮🇳 Indian
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="voice-controls">
+                    <button class="voice-btn" id="playBtn" onclick="playLecture()">
+                        <span>▶️ Play Lecture</span>
+                    </button>
+                    <button class="voice-btn" id="pauseBtn" onclick="pauseLecture()" style="display:none;">
+                        <span>⏸️ Pause</span>
+                    </button>
+                    <button class="voice-btn" onclick="stopLecture()">
+                        <span>⏹️ Stop</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Processing your files...</div>
+        </div>
+    </div>
+
+    <script>
+        let selectedFiles = [];
+        let currentExtractedText = '';
+        let selectedVoice = 'en-US';
+        let speechSynthesis = window.speechSynthesis;
+        let currentUtterance = null;
+
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const selectedFilesDiv = document.getElementById('selectedFiles');
+        const processBtn = document.getElementById('processBtn');
+        const lectureBtn = document.getElementById('lectureBtn');
+        const errorMsg = document.getElementById('errorMessage');
+        const successMsg = document.getElementById('successMessage');
+        const resultsSection = document.getElementById('resultsSection');
+        const lectureSection = document.getElementById('lectureSection');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        fileInput.addEventListener('change', handleFileSelect);
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+
+        function handleFileSelect(e) {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (selectedFiles.length + files.length > 10) {
+                showError('Maximum 10 files allowed');
+                return;
+            }
+            
+            for (let file of files) {
+                if (file.size > 50 * 1024 * 1024) {
+                    showError(`File ${file.name} is too large. Maximum 50MB allowed.`);
+                    continue;
+                }
+                selectedFiles.push(file);
+            }
+            
+            displaySelectedFiles();
+            processBtn.disabled = selectedFiles.length === 0;
+            lectureBtn.disabled = selectedFiles.length === 0;
+        }
+
+        function displaySelectedFiles() {
+            if (selectedFiles.length === 0) {
+                selectedFilesDiv.style.display = 'none';
+                return;
+            }
+            
+            selectedFilesDiv.style.display = 'block';
+            selectedFilesDiv.innerHTML = '';
+            
+            selectedFiles.forEach((file, index) => {
+                const icon = getFileIcon(file.name);
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <span class="file-icon">${icon}</span>
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <button class="remove-file" onclick="removeFile(${index})">Remove</button>
+                `;
+                selectedFilesDiv.appendChild(fileItem);
+            });
+        }
+
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📄',
+                'doc': '📝',
+                'docx': '📝',
+                'xls': '📊',
+                'xlsx': '📊',
+                'png': '🖼️',
+                'jpg': '🖼️',
+                'jpeg': '🖼️',
+                'gif': '🖼️'
+            };
+            return icons[ext] || '📎';
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displaySelectedFiles();
+            processBtn.disabled = selectedFiles.length === 0;
+            lectureBtn.disabled = selectedFiles.length === 0;
+            fileInput.value = '';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
+        async function processFiles() {
+            if (selectedFiles.length === 0) {
+                showError('Please select at least one file');
+                return;
+            }
+
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            resultsSection.style.display = 'none';
+            lectureSection.style.display = 'none';
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('file', file);
+            });
+            
+            const prompt = document.getElementById('promptInput').value.trim();
+            formData.append('prompt', prompt);
+            
+            processBtn.disabled = true;
+            lectureBtn.disabled = true;
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                const response = await fetch('/process', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                loadingOverlay.style.display = 'none';
+                
+                if (data.error) {
+                    showError(data.error);
+                    processBtn.disabled = false;
+                    lectureBtn.disabled = false;
+                } else {
+                    currentExtractedText = data.extracted_text;
+                    document.getElementById('extractedText').textContent = data.extracted_text;
+                    document.getElementById('aiResponse').textContent = data.ai_response;
+                    resultsSection.style.display = 'block';
+                    
+                    showSuccess(`Successfully processed ${data.processed_count} file(s)!`);
+                    
+                    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    
+                    processBtn.disabled = false;
+                    lectureBtn.disabled = false;
+                }
+            } catch (error) {
+                loadingOverlay.style.display = 'none';
+                showError('Network error. Please try again.');
+                processBtn.disabled = false;
+                lectureBtn.disabled = false;
+            }
+        }
+
+        function showLectureOptions() {
+            if (!currentExtractedText) {
+                showError('Please process files first');
+                return;
+            }
+            
+            lectureSection.style.display = 'block';
+            lectureSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function selectVoice(element, voice) {
+            document.querySelectorAll('.voice-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            selectedVoice = voice;
+        }
+
+        async function playLecture() {
+            if (!currentExtractedText) {
+                showError('No content to read');
+                return;
+            }
+
+            stopLecture();
+
+            loadingOverlay.style.display = 'flex';
+            document.querySelector('.loading-text').textContent = 'Generating lecture...';
+
+            try {
+                const response = await fetch('/generate_lecture', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        text: currentExtractedText,
+                        voice: selectedVoice
+                    })
+                });
+
+                const data = await response.json();
+                loadingOverlay.style.display = 'none';
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                const lectureText = data.lecture_text;
+                currentUtterance = new SpeechSynthesisUtterance(lectureText);
+                
+                const voices = speechSynthesis.getVoices();
+                const selectedVoiceObj = voices.find(v => v.lang.startsWith(selectedVoice));
+                if (selectedVoiceObj) {
+                    currentUtterance.voice = selectedVoiceObj;
+                }
+                
+                currentUtterance.rate = 0.9;
+                currentUtterance.pitch = 1;
+                currentUtterance.volume = 1;
+
+                currentUtterance.onstart = () => {
+                    document.getElementById('playBtn').style.display = 'none';
+                    document.getElementById('pauseBtn').style.display = 'flex';
+                    document.getElementById('pauseBtn').classList.add('speaking');
+                };
+
+                currentUtterance.onend = () => {
+                    document.getElementById('playBtn').style.display = 'flex';
+                    document.getElementById('pauseBtn').style.display = 'none';
+                    showSuccess('Lecture completed!');
+                };
+
+                speechSynthesis.speak(currentUtterance);
+                showSuccess('Lecture started!');
+
+            } catch (error) {
+                loadingOverlay.style.display = 'none';
+                showError('Error generating lecture');
+            }
+        }
+
+        function pauseLecture() {
+            if (speechSynthesis.speaking) {
+                if (speechSynthesis.paused) {
+                    speechSynthesis.resume();
+                    document.getElementById('pauseBtn').innerHTML = '<span>⏸️ Pause</span>';
+                } else {
+                    speechSynthesis.pause();
+                    document.getElementById('pauseBtn').innerHTML = '<span>▶️ Resume</span>';
+                }
+            }
+        }
+
+        function stopLecture() {
+            speechSynthesis.cancel();
+            document.getElementById('playBtn').style.display = 'flex';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('pauseBtn').classList.remove('speaking');
+        }
+
+        function showError(message) {
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+            setTimeout(() => {
+                errorMsg.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 5000);
+        }
+
+        function logout() {
+            window.location.href = '/logout';
+        }
+
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = () => {};
+        }
+    </script>
+</body>
+</html>
